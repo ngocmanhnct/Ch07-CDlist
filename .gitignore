@@ -1,0 +1,6 @@
+# NetBeans project files
+/nbproject/private/
+/build/
+/dist/
+# Java class files
+*.class
