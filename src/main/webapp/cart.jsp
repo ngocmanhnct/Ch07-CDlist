@@ -26,6 +26,7 @@
                     <c:forEach var="item" items="${cart.items}">
                         <tr>
                             <td>
+                                <%-- Form Update số lượng --%>
                                 <c:url value="/cart" var="updateUrl"/>
                                 <form action="${updateUrl}" method="post">
                                     <input type="hidden" name="action" value="update">
@@ -42,6 +43,7 @@
                             <td class="right">${item.totalCurrencyFormat}</td>
 
                             <td>
+                                <%-- Form Remove sản phẩm --%>
                                 <c:url value="/cart" var="removeUrl"/>
                                 <form action="${removeUrl}" method="post">
                                     <input type="hidden" name="action" value="remove">
@@ -62,14 +64,15 @@
 
         <p>To change the quantity, enter the new quantity and click on the Update button.</p>
 
+        <%-- Nút Continue Shopping --%>
         <c:url value="/cart" var="shopUrl"/>
         <form action="${shopUrl}" method="post">
             <input type="hidden" name="action" value="shop">
             <input type="submit" value="Continue Shopping">
         </form> <br>
 
-        <%-- Checkout action (giả sử chuyển hướng đến trang checkout hoặc servlet) --%>
-        <c:url value="/checkout" var="checkoutUrl"/>
+        <%-- Nút Checkout (ĐÃ SỬA: Trỏ về /cart thay vì /checkout) --%>
+        <c:url value="/cart" var="checkoutUrl"/>
         <form action="${checkoutUrl}" method="post">
             <input type="hidden" name="action" value="checkout">
             <input type="submit" value="Checkout">
