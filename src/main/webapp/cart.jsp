@@ -1,13 +1,11 @@
-<%@page import="murach.business.Cart"%>
-<%@page import="murach.business.LineItem"%>
-<%@page import="java.util.ArrayList"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
     <head> 
         <meta charset="UTF-8">
         <title>Murach's Java Servlets and JSP</title>
-        <link rel="stylesheet" href="styles/main.css" type="text/css"/>
+        <link rel="stylesheet" href="<c:url value='/styles/main.css'/>" type="text/css"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head> 
     <body>
@@ -21,55 +19,59 @@
                 <th>&nbsp;</th> 
             </tr>
 
-            <% 
-                // Lấy giỏ hàng từ Session
-                Cart cart = (Cart) session.getAttribute("cart");
+            <%-- Kiểm tra giỏ hàng có tồn tại và có sản phẩm không --%>
+            <c:choose>
+                <c:when test="${cart != null && cart.items.size() > 0}">
+                    <%-- Duyệt qua từng sản phẩm trong giỏ (LineItem) --%>
+                    <c:forEach var="item" items="${cart.items}">
+                        <tr>
+                            <td>
+                                <c:url value="/cart" var="updateUrl"/>
+                                <form action="${updateUrl}" method="post">
+                                    <input type="hidden" name="action" value="update">
+                                    <input type="hidden" name="productCode" value="${item.product.code}">
+                                    <input type="text" name="quantity" value="${item.quantity}">
+                                    <input type="submit" value="Update">
+                                </form>
+                            </td>
 
-                if (cart != null && cart.getItems().size() > 0) {
-                    for (LineItem item : cart.getItems()) {
-            %>
-            <tr>
-                <td>
-                    <form action="cart" method="post">
-                        <input type="hidden" name="action" value="update">
-                        <input type="hidden" name="productCode" value="<%= item.getProduct().getCode() %>">
-                        <input type="text" name="quantity" value="<%= item.getQuantity() %>">
-                        <input type="submit" value="Update">
-                    </form>
-                </td>
+                            <td>${item.product.description}</td>
 
-                <td><%= item.getProduct().getDescription() %></td>
+                            <td class="right">${item.product.priceCurrencyFormat}</td>
 
-                <td class="right">$<%= item.getProduct().getPrice() %></td>
+                            <td class="right">${item.totalCurrencyFormat}</td>
 
-                <td class="right"><%= item.getTotalCurrencyFormat() %></td>
-
-                <td>
-                    <form action="cart" method="post">
-                        <input type="hidden" name="action" value="remove">
-                        <input type="hidden" name="productCode" value="<%= item.getProduct().getCode() %>">
-                        <input type="submit" value="Remove Item">
-                    </form>
-                </td>
-            </tr>
-            <% 
-                    } 
-                } else {
-            %>
-                <tr>
-                    <td colspan="5" >Cart is empty</td>
-                </tr>
-            <% } %>
+                            <td>
+                                <c:url value="/cart" var="removeUrl"/>
+                                <form action="${removeUrl}" method="post">
+                                    <input type="hidden" name="action" value="remove">
+                                    <input type="hidden" name="productCode" value="${item.product.code}">
+                                    <input type="submit" value="Remove Item">
+                                </form>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <tr>
+                        <td colspan="5">Cart is empty</td>
+                    </tr>
+                </c:otherwise>
+            </c:choose>
         </table>
 
         <p>To change the quantity, enter the new quantity and click on the Update button.</p>
 
-        <form action="cart" method="post">
+        <c:url value="/cart" var="shopUrl"/>
+        <form action="${shopUrl}" method="post">
             <input type="hidden" name="action" value="shop">
             <input type="submit" value="Continue Shopping">
         </form> <br>
 
-        <form action="#" method="post">
+        <%-- Checkout action (giả sử chuyển hướng đến trang checkout hoặc servlet) --%>
+        <c:url value="/checkout" var="checkoutUrl"/>
+        <form action="${checkoutUrl}" method="post">
+            <input type="hidden" name="action" value="checkout">
             <input type="submit" value="Checkout">
         </form>
     </body>
